@@ -2,33 +2,11 @@ let map;
 let marker;
 let currentCity = "";
 
-const countryToCurrency = {
-  US: "USD",
-  GB: "GBP",
-  UK: "GBP",
-  EU: "EUR",
-  DE: "EUR",
-  FR: "EUR",
-  IT: "EUR",
-  ES: "EUR",
-  NL: "EUR",
-  KZ: "KZT",
-  RU: "RUB",
-  CN: "CNY",
-  JP: "JPY",
-  IN: "INR",
-  CA: "CAD",
-  AU: "AUD",
-  BR: "BRL",
-  KR: "KRW",
-  TR: "TRY",
-};
-
 function initMap() {
   map = L.map("map").setView([20, 0], 2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap",
-  }).addTo(map);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(
+    map
+  );
 }
 
 document.getElementById("searchBtn").addEventListener("click", () => {
@@ -52,7 +30,9 @@ async function fetchDashboardData(city) {
     updateWeatherUI(weatherData);
     updateMapUI(weatherData.coordinates);
 
-    autoSelectCurrency(weatherData.country);
+    if (weatherData.country) {
+      autoSelectCurrency(weatherData.country);
+    }
 
     fetchNews(city);
   } catch (error) {
@@ -63,7 +43,6 @@ async function fetchDashboardData(city) {
 function updateWeatherUI(data) {
   document.getElementById("temp").innerText = `${Math.round(data.temp)}°C`;
   document.getElementById("description").innerText = data.description;
-
   document.getElementById("feelsLike").innerText = `${Math.round(
     data.feels_like
   )}°C`;
@@ -103,22 +82,33 @@ function updateMapUI(coords) {
   }, 200);
 }
 
-function autoSelectCurrency(countryCode) {
-  if (!countryCode) return;
-
-  const currencyCode = countryToCurrency[countryCode];
+async function autoSelectCurrency(countryCode) {
   const toSelect = document.getElementById("toCurrency");
 
-  if (currencyCode) {
+  try {
+    const response = await fetch(`/api/country-info?code=${countryCode}`);
+    const data = await response.json();
+    const currencyCode = data.currency;
+
+    console.log(`Country: ${countryCode}, Currency Found: ${currencyCode}`);
+
     const option = toSelect.querySelector(`option[value="${currencyCode}"]`);
 
     if (option) {
       toSelect.value = currencyCode;
       toSelect.style.borderColor = "#10b981";
-      setTimeout(() => (toSelect.style.borderColor = "#e5e7eb"), 1000);
+      toSelect.style.borderWidth = "2px";
+      setTimeout(() => {
+        toSelect.style.borderColor = "#e5e7eb";
+        toSelect.style.borderWidth = "1px";
+      }, 1000);
     } else {
+      console.warn("Currency not in dropdown:", currencyCode);
       toSelect.value = "USD";
     }
+  } catch (error) {
+    console.error("Failed to auto-select currency:", error);
+    toSelect.value = "USD";
   }
 }
 
@@ -139,23 +129,18 @@ async function fetchNews(query) {
     }
 
     articles.forEach((article) => {
-      const imgUrl =
-        article.urlToImage ||
-        "https://via.placeholder.com/400x200?text=No+Image";
-
+      const imgUrl = article.urlToImage;
       const card = document.createElement("div");
       card.className = "news-item";
       card.innerHTML = `
-                <img src="${imgUrl}" class="news-image" alt="News">
-                <div class="news-content">
-                    <h4><a href="${article.url}" target="_blank">${
-        article.title
-      }</a></h4>
-                    <span class="news-date">${new Date(
-                      article.publishedAt
-                    ).toLocaleDateString()}</span>
-                </div>
-            `;
+        <img src="${imgUrl}" class="news-image" alt="News">
+        <div class="news-content">
+          <h4><a href="${article.url}" target="_blank">${article.title}</a></h4>
+          <span class="news-date">${new Date(
+            article.publishedAt
+          ).toLocaleDateString()}</span>
+        </div>
+      `;
       newsGrid.appendChild(card);
     });
   } catch (error) {

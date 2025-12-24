@@ -21,7 +21,7 @@ app.get("/api/weather", async (req, res) => {
 
     let rainVolume = 0;
     if (data.rain) {
-      rainVolume = data.rain["3h"] || data.rain["1h"] || 0;
+      rainVolume = data.rain["3h"];
     }
 
     const weatherData = {
@@ -73,6 +73,26 @@ app.get("/api/currency", async (req, res) => {
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: "Currency API Error" });
+  }
+});
+
+app.get("/api/country-info", async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.status(400).json({ error: "Country code required" });
+
+  try {
+    const url = `https://restcountries.com/v3.1/alpha/${code}`;
+    const response = await axios.get(url);
+
+    const countryData = response.data[0];
+
+    const currencies = countryData.currencies;
+    const currencyCode = Object.keys(currencies)[0];
+
+    res.json({ currency: currencyCode });
+  } catch (error) {
+    console.error("Country API Error:", error.message);
+    res.json({ currency: "USD" });
   }
 });
 
