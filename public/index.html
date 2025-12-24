@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CityScope Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <header class="header">
+        <div class="logo">
+          <i class="fa-solid fa-earth-americas"></i> City Info
+        </div>
+        <div class="search-bar">
+          <input
+            type="text"
+            id="cityInput"
+            placeholder="Enter city (e.g. Manchester, Madrid)..."
+          />
+          <button id="searchBtn">Search</button>
+        </div>
+      </header>
+
+      <main class="grid-layout">
+        <section class="card weather-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-cloud-sun"></i> Current Weather</h3>
+            <span id="countryCode" class="badge">--</span>
+          </div>
+          <div class="weather-content">
+            <div class="weather-main">
+              <img id="weatherIcon" src="" alt="" style="display: none" />
+              <h1 id="temp">--°C</h1>
+              <p id="description">Search for a city</p>
+            </div>
+
+            <div class="weather-details">
+              <div class="detail-item">
+                <i class="fa-solid fa-temperature-half"></i>
+                <span>Feels Like</span>
+                <strong id="feelsLike">--</strong>
+              </div>
+              <div class="detail-item">
+                <i class="fa-solid fa-droplet"></i>
+                <span>Humidity</span>
+                <strong id="humidity">--</strong>
+              </div>
+              <div class="detail-item">
+                <i class="fa-solid fa-wind"></i>
+                <span>Wind</span>
+                <strong id="wind">--</strong>
+              </div>
+              <div class="detail-item">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Pressure</span>
+                <strong id="pressure">--</strong>
+              </div>
+              <div class="detail-item">
+                <i class="fa-solid fa-cloud-showers-heavy"></i>
+                <span>Rain (3h)</span>
+                <strong id="rain">--</strong>
+              </div>
+              <div class="detail-item">
+                <i class="fa-solid fa-map-pin"></i>
+                <span>Coords</span>
+                <strong id="coordsText">--</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card map-card">
+          <h3><i class="fa-solid fa-map-location-dot"></i> Location Map</h3>
+          <div id="map"></div>
+        </section>
+
+        <section class="card currency-card">
+          <h3><i class="fa-solid fa-money-bill-transfer"></i> Exchange Rate</h3>
+          <div class="converter-form">
+            <div class="input-group">
+              <label>Amount</label>
+              <input type="number" id="amount" value="100" />
+            </div>
+            <div class="exchange-row">
+              <div class="select-wrapper">
+                <label>From</label>
+                <select id="fromCurrency">
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="KZT">KZT</option>
+                  <option value="JPY">JPY</option>
+                  <option value="CNY">CNY</option>
+                </select>
+              </div>
+              <div class="arrow">➝</div>
+              <div class="select-wrapper">
+                <label>To (Local)</label>
+                <select id="toCurrency">
+                  <option value="KZT">KZT</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="CNY">CNY</option>
+                  <option value="RUB">RUB</option>
+                  <option value="CAD">CAD</option>
+                  <option value="AUD">AUD</option>
+                </select>
+              </div>
+            </div>
+            <button id="convertBtn">Convert</button>
+            <div id="conversionResult" class="result-box">---</div>
+          </div>
+        </section>
+
+        <section class="news-section">
+          <h3><i class="fa-solid fa-newspaper"></i> Local Headlines</h3>
+          <div id="newsGrid" class="news-grid">
+            <div class="empty-state">Top news will appear here...</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="app.js"></script>
+  </body>
+</html>
